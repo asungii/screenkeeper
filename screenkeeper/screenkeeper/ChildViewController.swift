@@ -6,6 +6,8 @@ class ChildViewController: UIViewController {
     let defaults = UserDefaults.standard
     let database = Database.database().reference()
     
+    let childUsername = UserDefaults.standard.string(forKey: "username") ?? "noname"
+    
     var timer = Timer()
         
     private let timerDisplay: UILabel = {
@@ -48,18 +50,22 @@ class ChildViewController: UIViewController {
     }
 
     override func viewDidAppear(_ animated: Bool) {
-        let username = defaults.string(forKey: "username") ?? "noname"
+                
+        var timeEnd = -1.0
         
-        print(username)
-        
-        database.child("child_users/\(username)/time").observe(.value, with: { [self] snapshot in
+        self.database.child("child_users/\(childUsername)/time_end").observe(.value, with: { [weak self] snapshot in
+            guard let strongSelf = self else {
+                return
+            }
             
-            let time = snapshot.value as? Int ?? -1
+            timeEnd = snapshot.value as? Double ?? -1.0
 
-            print(time)
-            print("time changed")
-            
-            self.updateTimer(time)
+        })
+        // timer outside here, somehow get timeEnd variable out here
+        
+        let timer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true, block: { timer in
+            self.updateTimer(timeEnd)
+            // issue is, timeEnd is static-- it doesn't change even when it changes in firebase.
         })
     }
     
@@ -72,7 +78,24 @@ class ChildViewController: UIViewController {
     @objc private func timerAction() {
     }
     
-    func updateTimer(_ newTime: Int) {
-        timerDisplay.text = String(newTime)
+    func updateTimer(_ timeEnd: Double) {
+        let timeEndDate = doubleToDate(timeEnd)
+        let timeInterval = timeEndDate.timeIntervalSinceNow
+        
+        if timeEndDate < Date() {
+            timerDisplay.text = "0"
+            return
+        }
+        
+        timerDisplay.text = String(Int(round(timeInterval)))
     }
+    
+    func dateToDouble(_ date: Date) -> Double {
+        return date.timeIntervalSince1970
+    }
+    
+    func doubleToDate(_ double: Double) -> Date {
+        return Date(timeIntervalSince1970: double)
+    }
+    
 }
