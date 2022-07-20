@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		E610F0AF2887C5D50079FBE9 /* UICircularProgressRing in Frameworks */ = {isa = PBXBuildFile; productRef = E610F0AE2887C5D50079FBE9 /* UICircularProgressRing */; };
 		E66A831A2877DD12007B55FE /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E66A83192877DD12007B55FE /* AppDelegate.swift */; };
 		E66A831C2877DD12007B55FE /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E66A831B2877DD12007B55FE /* SceneDelegate.swift */; };
 		E66A83212877DD12007B55FE /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E66A831F2877DD12007B55FE /* Main.storyboard */; };
@@ -84,6 +85,7 @@
 				E66A839A2877F4D9007B55FE /* FirebaseMessaging in Frameworks */,
 				E66A83942877F4D9007B55FE /* FirebaseDatabaseSwift in Frameworks */,
 				E66A839C2877F4D9007B55FE /* FirebasePerformance in Frameworks */,
+				E610F0AF2887C5D50079FBE9 /* UICircularProgressRing in Frameworks */,
 				E66A83962877F4D9007B55FE /* FirebaseInAppMessaging-Beta in Frameworks */,
 				E66A83982877F4D9007B55FE /* FirebaseInAppMessagingSwift-Beta in Frameworks */,
 				E66A83922877F4D9007B55FE /* FirebaseDatabase in Frameworks */,
@@ -200,6 +202,7 @@
 				E66A839B2877F4D9007B55FE /* FirebasePerformance */,
 				E66A839D2877F4D9007B55FE /* FirebaseStorage */,
 				E66A839F2877F4D9007B55FE /* FirebaseStorageCombine-Community */,
+				E610F0AE2887C5D50079FBE9 /* UICircularProgressRing */,
 			);
 			productName = screenkeeper;
 			productReference = E66A83162877DD12007B55FE /* screenkeeper.app */;
@@ -275,6 +278,7 @@
 			mainGroup = E66A830D2877DD11007B55FE;
 			packageReferences = (
 				E66A83882877F4D9007B55FE /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+				E610F0AD2887C5D50079FBE9 /* XCRemoteSwiftPackageReference "UICircularProgressRing" */,
 			);
 			productRefGroup = E66A83172877DD12007B55FE /* Products */;
 			projectDirPath = "";
@@ -679,6 +683,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		E610F0AD2887C5D50079FBE9 /* XCRemoteSwiftPackageReference "UICircularProgressRing" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/luispadron/UICircularProgressRing.git";
+			requirement = {
+				branch = master;
+				kind = branch;
+			};
+		};
 		E66A83882877F4D9007B55FE /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
@@ -690,6 +702,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		E610F0AE2887C5D50079FBE9 /* UICircularProgressRing */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E610F0AD2887C5D50079FBE9 /* XCRemoteSwiftPackageReference "UICircularProgressRing" */;
+			productName = UICircularProgressRing;
+		};
 		E66A83892877F4D9007B55FE /* FirebaseAnalytics */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = E66A83882877F4D9007B55FE /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
