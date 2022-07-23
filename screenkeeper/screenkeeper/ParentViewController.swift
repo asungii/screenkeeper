@@ -1,7 +1,6 @@
 import UIKit
 import FirebaseDatabase
 import Foundation
-import UICircularProgressRing
 
 class ParentViewController: UIViewController {
 
@@ -81,7 +80,7 @@ class ParentViewController: UIViewController {
         view.layer.addSublayer(shapeLayer)
     }
     
-    func triggerTimerRingAnimation(_ duration: Int) {
+    func triggerTimerRingAnimation(_ duration: Double) {
         let basicAnimation = CABasicAnimation(keyPath: "strokeEnd")
         basicAnimation.toValue = 1
         basicAnimation.duration = CFTimeInterval(duration) * 1.25 // i have no idea why this doesn't work right but it just needs to be *1.25 idk
@@ -128,6 +127,8 @@ class ParentViewController: UIViewController {
                 if endTimeDate < Date() {
                     timerDuration = 0
                 }
+                
+                strongSelf.triggerTimerRingAnimation(endTime - Date().timeIntervalSince1970)
             })
             // timer outside here, somehow get timeEnd variable out here
             self.timer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true, block: { timer in
@@ -180,7 +181,6 @@ class ParentViewController: UIViewController {
                 
                 self.updateTimer(endTime)
                 print("timer : \((endTime - Date().timeIntervalSince1970))")
-                self.triggerTimerRingAnimation(Int(self.timerDisplay.text ?? "0") ?? 0)
             })
         })
     }

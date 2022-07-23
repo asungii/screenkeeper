@@ -5,6 +5,8 @@ class ChildViewController: UIViewController {
 
     let defaults = UserDefaults.standard
     let database = Database.database().reference()
+    let shapeLayer = CAShapeLayer()
+    let trackLayer = CAShapeLayer()
     
     let childUsername = UserDefaults.standard.string(forKey: "username") ?? "noname"
     
@@ -35,10 +37,38 @@ class ChildViewController: UIViewController {
         let width = self.view.frame.width
         let height = self.view.frame.height
         
+        let center = view.center
+        let circularPath = UIBezierPath(arcCenter: center, radius: 100, startAngle: -CGFloat.pi / 2, endAngle: 2*CGFloat.pi, clockwise: true)
+        
+        trackLayer.path = circularPath.cgPath
+        shapeLayer.path = circularPath.cgPath
+        
+        shapeLayer.strokeColor = UIColor.orange.cgColor
+        shapeLayer.lineWidth = 20
+        shapeLayer.lineCap = .round
+        shapeLayer.fillColor = UIColor.clear.cgColor
+        shapeLayer.strokeEnd = 0
+        
+        trackLayer.strokeColor = UIColor.lightGray.cgColor
+        trackLayer.lineWidth = 20
+        trackLayer.lineCap = .round
+        trackLayer.fillColor = UIColor.clear.cgColor
+        
         // Do any additional setup after loading the view.
         view.backgroundColor = .systemRed
         view.addSubview(timerDisplay)
         view.addSubview(checkButton)
+        view.layer.addSublayer(trackLayer)
+        view.layer.addSublayer(shapeLayer)
+    }
+    
+    func triggerTimerRingAnimation(_ duration: Double) {
+        let basicAnimation = CABasicAnimation(keyPath: "strokeEnd")
+        basicAnimation.toValue = 1
+        basicAnimation.duration = CFTimeInterval(duration) * 1.25 // i have no idea why this doesn't work right but it just needs to be *1.25 idk
+        basicAnimation.fillMode = .forwards
+        basicAnimation.isRemovedOnCompletion = false
+        shapeLayer.add(basicAnimation, forKey: "basic")
     }
     
     override func viewDidLayoutSubviews() {
@@ -47,24 +77,29 @@ class ChildViewController: UIViewController {
         
         timerDisplay.frame = CGRect(x: width/2 - 150, y: height/2 - 150, width: 300, height: 300)
         checkButton.frame = CGRect(x: width/2 - 150, y: timerDisplay.frame.origin.y + timerDisplay.frame.size.height + 10, width: 300, height: 50)
+        trackLayer.bounds = CGRect(x: width/2 - 150, y: height/2 - 150, width: 300, height: 300)
+        trackLayer.frame = CGRect(x: width/2 - 150, y: height/2 - 150, width: 300, height: 300)
+        shapeLayer.bounds = CGRect(x: width/2 - 150, y: height/2 - 150, width: 300, height: 300)
+        shapeLayer.frame = CGRect(x: width/2 - 150, y: height/2 - 150, width: 300, height: 300)
     }
 
     override func viewDidAppear(_ animated: Bool) {
                 
-        var timeEnd = -1.0
+        var endTime = -1.0
         
         self.database.child("child_users/\(childUsername)/time_end").observe(.value, with: { [weak self] snapshot in
             guard let strongSelf = self else {
                 return
             }
             
-            timeEnd = snapshot.value as? Double ?? -1.0
-
+            endTime = snapshot.value as? Double ?? -1.0
+            
+            strongSelf.triggerTimerRingAnimation(endTime - Date().timeIntervalSince1970)
         })
         // timer outside here, somehow get timeEnd variable out here
         
         let timer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true, block: { timer in
-            self.updateTimer(timeEnd)
+            self.updateTimer(endTime)
             // issue is, timeEnd is static-- it doesn't change even when it changes in firebase.
         })
     }
