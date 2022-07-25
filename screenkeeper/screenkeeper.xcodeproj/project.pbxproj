@@ -74,6 +74,7 @@
 		E6A8CC98287A4B6900C02EB4 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "../../../../Downloads/GoogleService-Info.plist"; sourceTree = "<group>"; };
 		E6DF6C8E287FE8D7003D7F7A /* InitialViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InitialViewController.swift; sourceTree = "<group>"; };
 		E6DF6C902880C7CC003D7F7A /* ChildSetupViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChildSetupViewController.swift; sourceTree = "<group>"; };
+		E6E76540288E28D00070AF4D /* screenkeeperRelease.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = screenkeeperRelease.entitlements; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -136,6 +137,7 @@
 		E66A83182877DD12007B55FE /* screenkeeper */ = {
 			isa = PBXGroup;
 			children = (
+				E6E76540288E28D00070AF4D /* screenkeeperRelease.entitlements */,
 				E6A8CC97287A484900C02EB4 /* screenkeeper.entitlements */,
 				E66A83192877DD12007B55FE /* AppDelegate.swift */,
 				E66A831B2877DD12007B55FE /* SceneDelegate.swift */,
@@ -275,7 +277,6 @@
 			mainGroup = E66A830D2877DD11007B55FE;
 			packageReferences = (
 				E66A83882877F4D9007B55FE /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
-				E610F0AD2887C5D50079FBE9 /* XCRemoteSwiftPackageReference "UICircularProgressRing" */,
 			);
 			productRefGroup = E66A83172877DD12007B55FE /* Products */;
 			projectDirPath = "";
@@ -535,7 +536,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = screenkeeper/screenkeeper.entitlements;
+				CODE_SIGN_ENTITLEMENTS = screenkeeper/screenkeeperRelease.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
@@ -680,14 +681,6 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		E610F0AD2887C5D50079FBE9 /* XCRemoteSwiftPackageReference "UICircularProgressRing" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/luispadron/UICircularProgressRing.git";
-			requirement = {
-				branch = master;
-				kind = branch;
-			};
-		};
 		E66A83882877F4D9007B55FE /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";

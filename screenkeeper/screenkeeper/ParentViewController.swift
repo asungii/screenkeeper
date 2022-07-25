@@ -20,7 +20,7 @@ class ParentViewController: UIViewController {
         let timerDisplay = UILabel()
         timerDisplay.backgroundColor = .white
         timerDisplay.textColor = .systemBlue
-        timerDisplay.text = "-1"
+        timerDisplay.text = "0"
         timerDisplay.textAlignment = .center
         return timerDisplay
     }()
@@ -129,6 +129,15 @@ class ParentViewController: UIViewController {
                 }
                 
                 strongSelf.triggerTimerRingAnimation(endTime - Date().timeIntervalSince1970)
+                
+                let childName = strongSelf.childUsername.dropLast(6)
+                
+                let content = UNMutableNotificationContent()
+                content.title = "\(childName)'s screen time has expired!"
+                content.body = "Tap here to check \(childName)'s status."
+                
+                strongSelf.queueNotification(content: content, triggerDate: endTimeDate)
+                
             })
             // timer outside here, somehow get timeEnd variable out here
             self.timer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true, block: { timer in
@@ -137,7 +146,6 @@ class ParentViewController: UIViewController {
                 // issue is, timeEnd is static-- it doesn't change even when it changes in firebase.
             })
         })
-        
     }
     
     @objc private func timerAction() {
@@ -151,10 +159,11 @@ class ParentViewController: UIViewController {
             timerDisplay.text = "0"
             return
         }
-        print((timeInterval))
-        timerDisplay.text = String(Int(round(timeInterval)))
+        
+        let formatter = DateComponentsFormatter()
+        
+        timerDisplay.text = formatter.string(from: timeInterval)
     }
-
     
     @objc private func addTimeButtonTapped() {
                 
@@ -183,6 +192,23 @@ class ParentViewController: UIViewController {
                 print("timer : \((endTime - Date().timeIntervalSince1970))")
             })
         })
+    }
+    
+    func queueNotification(content: UNNotificationContent, triggerDate: Date) {
+        let calendar = Calendar.current
+        
+        var components = calendar.dateComponents([.hour, .minute, .second], from: triggerDate as Date)
+        
+        let uuidString = UUID().uuidString
+        let request = UNNotificationRequest(identifier: uuidString,
+                    content: content, trigger: UNCalendarNotificationTrigger(dateMatching: components, repeats: false))
+
+        let notificationCenter = UNUserNotificationCenter.current()
+        notificationCenter.add(request) { (error) in
+           if error != nil {
+               print("error when adding notification request")
+           }
+        }
     }
     
     func dateToDouble(_ date: Date) -> Double {

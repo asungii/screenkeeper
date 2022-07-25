@@ -107,15 +107,6 @@
         "revision" : "e1499bc69b9040b29184f7f2996f7bab467c1639",
         "version" : "1.19.0"
       }
-    },
-    {
-      "identity" : "uicircularprogressring",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/luispadron/UICircularProgressRing.git",
-      "state" : {
-        "branch" : "master",
-        "revision" : "5b00b9b42b0a7db6f8239d526d7251eef9a63dcd"
-      }
     }
   ],
   "version" : 2

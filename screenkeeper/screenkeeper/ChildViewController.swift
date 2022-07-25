@@ -94,7 +94,17 @@ class ChildViewController: UIViewController {
             
             endTime = snapshot.value as? Double ?? -1.0
             
+            let endTimeDate = strongSelf.doubleToDate(endTime)
+            
             strongSelf.triggerTimerRingAnimation(endTime - Date().timeIntervalSince1970)
+            
+            let childName = strongSelf.childUsername.dropLast(6)
+            
+            let content = UNMutableNotificationContent()
+            content.title = "Your screen time has expired!"
+            content.body = "Turn off your device; your device activity is now being monitored."
+            
+            strongSelf.queueNotification(content: content, triggerDate: endTimeDate)
         })
         // timer outside here, somehow get timeEnd variable out here
         
@@ -122,7 +132,26 @@ class ChildViewController: UIViewController {
             return
         }
         
-        timerDisplay.text = String(Int(round(timeInterval)))
+        let formatter = DateComponentsFormatter()
+        
+        timerDisplay.text = formatter.string(from: timeInterval)
+    }
+
+    func queueNotification(content: UNNotificationContent, triggerDate: Date) {
+        let calendar = Calendar.current
+        
+        var components = calendar.dateComponents([.hour, .minute, .second], from: triggerDate as Date)
+        
+        let uuidString = UUID().uuidString
+        let request = UNNotificationRequest(identifier: uuidString,
+                    content: content, trigger: UNCalendarNotificationTrigger(dateMatching: components, repeats: false))
+
+        let notificationCenter = UNUserNotificationCenter.current()
+        notificationCenter.add(request) { (error) in
+           if error != nil {
+               print("error when adding notification request")
+           }
+        }
     }
     
     func dateToDouble(_ date: Date) -> Double {
