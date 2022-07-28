@@ -49,11 +49,8 @@ class ParentViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
                 
-        // somehow moving this to the viewdidload worked?? for fixing the first click "noname" shit
-        database.child("parent_users/\(username)/device0").observeSingleEvent(of: .value, with: { snapshot in
-            
-            self.childUsername = snapshot.value as? String ?? "noname"
-        })
+        print(username)
+        
         let center = view.center
         let circularPath = UIBezierPath(arcCenter: center, radius: 100, startAngle: -CGFloat.pi / 2, endAngle: 2*CGFloat.pi, clockwise: true)
         
@@ -106,45 +103,40 @@ class ParentViewController: UIViewController {
 
     override func viewDidAppear(_ animated: Bool) {
         
-        database.child("parent_users/\(username)/device0").observeSingleEvent(of: .value, with: { snapshot in
-            
-            self.childUsername = snapshot.value as? String ?? "noname"
+        var endTime = -1.0
         
-            var endTime = -1.0
+        database.child("users/\(username)/device0/time_end").observe(.value, with: { [weak self] snapshot in
+            guard let strongSelf = self else {
+                return
+            }
             
-            self.database.child("child_users/\(self.childUsername)/time_end").observe(.value, with: { [weak self] snapshot in
-                guard let strongSelf = self else {
-                    return
-                }
-                
-                endTime = snapshot.value as? Double ?? -1.0
-                
-                var timerDuration = 0
-                
-                let endTimeDate = strongSelf.doubleToDate(endTime)
-                let timeInterval = endTimeDate.timeIntervalSinceNow
-                
-                if endTimeDate < Date() {
-                    timerDuration = 0
-                }
-                
-                strongSelf.triggerTimerRingAnimation(endTime - Date().timeIntervalSince1970)
-                
-                let childName = strongSelf.childUsername.dropLast(6)
-                
-                let content = UNMutableNotificationContent()
-                content.title = "\(childName)'s screen time has expired!"
-                content.body = "Tap here to check \(childName)'s status."
-                
-                strongSelf.queueNotification(content: content, triggerDate: endTimeDate)
-                
-            })
-            // timer outside here, somehow get timeEnd variable out here
-            self.timer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true, block: { timer in
-                self.updateTimer(endTime)
-                
-                // issue is, timeEnd is static-- it doesn't change even when it changes in firebase.
-            })
+            var timerDuration = 0
+            
+            endTime = snapshot.value as? Double ?? -1.0
+            
+            let endTimeDate = strongSelf.doubleToDate(endTime)
+            let timeInterval = endTimeDate.timeIntervalSinceNow
+            
+            if endTimeDate < Date() {
+                timerDuration = 0
+            }
+            
+            strongSelf.triggerTimerRingAnimation(endTime - Date().timeIntervalSince1970)
+            
+            let childName = strongSelf.childUsername.dropLast(6)
+            
+            let content = UNMutableNotificationContent()
+            content.title = "\(childName)'s screen time has expired!"
+            content.body = "Tap here to check \(childName)'s status."
+            
+            strongSelf.queueNotification(content: content, triggerDate: endTimeDate)
+            
+        })
+        // timer outside here, somehow get timeEnd variable out here
+        self.timer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true, block: { timer in
+            self.updateTimer(endTime)
+            
+            // issue is, timeEnd is static-- it doesn't change even when it changes in firebase.
         })
     }
     
@@ -167,30 +159,23 @@ class ParentViewController: UIViewController {
     
     @objc private func addTimeButtonTapped() {
                 
-        database.child("parent_users/\(username)/device0").observeSingleEvent(of: .value, with: { snapshot in
+        self.database.child("users/\(self.username)/device0/time_end").observeSingleEvent(of: .value, with: { snapshot in
             
-            self.childUsername = snapshot.value as? String ?? "noname"
-        
-            // for some reason, childUsername is "" when outside this closure
+            var oldEndTime = snapshot.value as? Double ?? -1.0
             
-            self.database.child("child_users/\(self.childUsername)/time_end").observeSingleEvent(of: .value, with: { snapshot in
-                
-                var oldEndTime = snapshot.value as? Double ?? -1.0
-                
-                // handling if time <= 0
-                if oldEndTime < self.dateToDouble(Date()) {
-                    oldEndTime = self.dateToDouble(Date())
-                }
-                
-                // finding end time
-                let endTime = oldEndTime + (Double(self.addTimeField.text ?? "0") ?? 0.0)
-                                
-                // setting end time
-                self.database.child("child_users/\(self.childUsername)/time_end").setValue(endTime)
-                
-                self.updateTimer(endTime)
-                print("timer : \((endTime - Date().timeIntervalSince1970))")
-            })
+            // handling if time <= 0
+            if oldEndTime < self.dateToDouble(Date()) {
+                oldEndTime = self.dateToDouble(Date())
+            }
+            
+            // finding end time
+            let endTime = oldEndTime + (Double(self.addTimeField.text ?? "0") ?? 0.0)
+                            
+            // setting end time
+            self.database.child("users/\(self.username)/device0/time_end").setValue(endTime)
+            
+            self.updateTimer(endTime)
+            print("timer : \((endTime - Date().timeIntervalSince1970))")
         })
     }
     

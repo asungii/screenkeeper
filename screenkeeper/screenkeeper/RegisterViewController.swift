@@ -1,12 +1,13 @@
 import UIKit
 import FirebaseAuth
 import FirebaseDatabase
+import FirebaseMessaging
 
 class RegisterViewController: UIViewController {
 
     let database = Database.database().reference()
     let defaults = UserDefaults.standard
-    
+        
     private let label: UILabel = {
         let label = UILabel()
         label.text = "Create Account"
@@ -101,7 +102,8 @@ class RegisterViewController: UIViewController {
     
     func createSafeEmail(email: String) -> String {
         let index = email.firstIndex(of: "@") ?? email.endIndex
-        let safeEmail = email[..<index]
+        let truncatedEmail = email[..<index]
+        let safeEmail = truncatedEmail.replacingOccurrences(of: ".", with: "_")
         return String(safeEmail.lowercased())
     }
     
@@ -119,15 +121,19 @@ class RegisterViewController: UIViewController {
             }
             
             let newCode = self.createAddCode()
-            let username = self.createSafeEmail(email: email)
+            
+            let token = FirebaseMessaging.Messaging.messaging().fcmToken
             
             let newUser: [String: Any] = [
                 "email": email,
                 "addcode": newCode,
-                "name": enteredName
+                "name": enteredName,
+                "fcmToken": token
             ]
             
-            self.database.child("parent_users").child(username).setValue(newUser)
+            let username = self.createSafeEmail(email: email)
+            
+            self.database.child("users/\(username)").setValue(newUser)
 
             self.defaults.set(username, forKey: "username")
             self.defaults.set(enteredName, forKey: "name")

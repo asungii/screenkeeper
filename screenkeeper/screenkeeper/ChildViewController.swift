@@ -8,7 +8,8 @@ class ChildViewController: UIViewController {
     let shapeLayer = CAShapeLayer()
     let trackLayer = CAShapeLayer()
     
-    let childUsername = UserDefaults.standard.string(forKey: "username") ?? "noname"
+    let childUsername = UserDefaults.standard.string(forKey: "childUsername") ?? "noname"
+    let parentUsername = UserDefaults.standard.string(forKey: "parentUsername") ?? "noname"
     
     var timer = Timer()
         
@@ -87,7 +88,7 @@ class ChildViewController: UIViewController {
                 
         var endTime = -1.0
         
-        self.database.child("child_users/\(childUsername)/time_end").observe(.value, with: { [weak self] snapshot in
+        database.child("users/\(parentUsername)/device0/time_end").observe(.value, with: { [weak self] snapshot in
             guard let strongSelf = self else {
                 return
             }

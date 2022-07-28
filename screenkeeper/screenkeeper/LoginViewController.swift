@@ -1,6 +1,7 @@
 import FirebaseDatabase
 import FirebaseAuth
 import UIKit
+import FirebaseMessaging
 
 class LoginViewController: UIViewController {
     
@@ -99,7 +100,8 @@ class LoginViewController: UIViewController {
     
     func createSafeEmail(email: String) -> String {
         let index = email.firstIndex(of: "@") ?? email.endIndex
-        let safeEmail = email[..<index]
+        let truncatedEmail = email[..<index]
+        let safeEmail = truncatedEmail.replacingOccurrences(of: ".", with: "_")
         return String(safeEmail.lowercased())
     }
     
@@ -134,9 +136,12 @@ class LoginViewController: UIViewController {
             print("user signed in")
             
             let username = strongSelf.createSafeEmail(email: email)
+            let token = FirebaseMessaging.Messaging.messaging().fcmToken
+
+            strongSelf.database.child("users/\(username)/token").setValue(token)
             
             strongSelf.defaults.set(username, forKey: "username")
-            strongSelf.database.child("parent_users/\(username)/name").observeSingleEvent(of: .value, with: { snapshot in
+            strongSelf.database.child("users/\(username)/name").observeSingleEvent(of: .value, with: { snapshot in
                 let name = snapshot.value as? String ?? "noname"
                 
                 strongSelf.defaults.set(name, forKey: "name")

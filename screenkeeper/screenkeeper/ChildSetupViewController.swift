@@ -1,6 +1,7 @@
 import UIKit
 import FirebaseAuth
 import FirebaseDatabase
+import FirebaseMessaging
 
 class ChildSetupViewController: UIViewController {
     
@@ -96,10 +97,11 @@ class ChildSetupViewController: UIViewController {
         let parentUsername = createSafeEmail(email: parentEmail)
         let childUsername = enteredName + createCode()
         
-        defaults.set(childUsername, forKey: "username")
+        defaults.set(childUsername, forKey: "childUsername")
         defaults.set(enteredName, forKey: "name")
+        defaults.set(parentUsername, forKey: "parentUsername")
         
-        database.child("parent_users").child(parentUsername).observeSingleEvent(of: .value, with: { [weak self] snapshot in
+        database.child("users/\(parentUsername)").observeSingleEvent(of: .value, with: { [weak self] snapshot in
             guard let strongSelf = self else {
                 return
             }
@@ -112,16 +114,16 @@ class ChildSetupViewController: UIViewController {
                 return
             }
                         
-            strongSelf.database.child("parent_users/\(parentUsername)").observeSingleEvent(of: .value, with: { snapshot in
-                let count = snapshot.childrenCount - 3
-                
-                strongSelf.database.child("parent_users/\(parentUsername)/device\(count)").setValue(childUsername)
+            strongSelf.database.child("users/\(parentUsername)").observeSingleEvent(of: .value, with: { snapshot in
+                let count = snapshot.childrenCount - 4 // THIS IS NUMBER OF NONDEVICE ITEMS IN PARENT USER
+                let token = FirebaseMessaging.Messaging.messaging().fcmToken
+
+                strongSelf.database.child("users/\(parentUsername)/device\(count)/username").setValue(childUsername)
+                strongSelf.database.child("users/\(parentUsername)/device\(count)/name").setValue(enteredName)
+                strongSelf.database.child("users/\(parentUsername)/device\(count)/time_end").setValue(0)
+                strongSelf.database.child("users/\(parentUsername)/device\(count)/fcmToken").setValue(token)
             })
                         
-            strongSelf.database.child("child_users/\(childUsername)/parent_email").setValue(parentEmail)
-            strongSelf.database.child("child_users/\(childUsername)/name").setValue(enteredName)
-            strongSelf.database.child("child_users/\(childUsername)/time").setValue(0)
-
             print("device connection successful")
             
             strongSelf.defaults.set(true, forKey: "complete")
@@ -140,7 +142,8 @@ class ChildSetupViewController: UIViewController {
     
     func createSafeEmail(email: String) -> String {
         let index = email.firstIndex(of: "@") ?? email.endIndex
-        let safeEmail = email[..<index]
+        let truncatedEmail = email[..<index]
+        let safeEmail = truncatedEmail.replacingOccurrences(of: ".", with: "_")
         return String(safeEmail.lowercased())
     }
     
