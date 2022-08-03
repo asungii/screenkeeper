@@ -52,8 +52,23 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MessagingDelegate, UNUser
     }
     
     func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable : Any], fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
-        print("AAAAAAAAAAAAAAAAAAAAA")
+        print("1 - notification received")
     }
-
+    
+    func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse) async {
+        print("notification received")
+        let notifTitle = response.notification.request.content.title
+        let notifBody = response.notification.request.content.body
+        print("didreceive title \(notifTitle)")
+        print("didreceive title \(notifBody)")
+    }
+    
+    func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
+        print("notification received")
+        let notifTitle = notification.request.content.title
+        let notifBody = notification.request.content.body
+        print("willpresent title \(notifTitle)")
+        print("willpresent body \(notifBody)")
+    }
 
 }

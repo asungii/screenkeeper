@@ -122,15 +122,6 @@ class ParentViewController: UIViewController {
             }
             
             strongSelf.triggerTimerRingAnimation(endTime - Date().timeIntervalSince1970)
-            
-            let childName = strongSelf.childUsername.dropLast(6)
-            
-            let content = UNMutableNotificationContent()
-            content.title = "\(childName)'s screen time has expired!"
-            content.body = "Tap here to check \(childName)'s status."
-            
-            strongSelf.queueNotification(content: content, triggerDate: endTimeDate)
-            
         })
         // timer outside here, somehow get timeEnd variable out here
         self.timer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true, block: { timer in
