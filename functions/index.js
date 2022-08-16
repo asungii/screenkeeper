@@ -5,15 +5,24 @@ admin.initializeApp();
 exports.onTimeEnd = functions.database.ref("users/{user}/device0/time_end")
     .onUpdate((snapshot, context) => {
       const user = context.params.user;
-      const t1ref = admin.database().ref(`users/${user}/fcmToken`);
-      t1ref.once("value").then(function(snapshot) {
-        console.log(`token1: ${snapshot.val()}`);
+      // when in this .onUpdate, use .after
+      const timeEnd = snapshot.after.val();
+      // i don't know why but toLocaleTimeString() doesn't work
+      const date = new Date(timeEnd*1000);
+      const offset = date.getTimezoneOffset() / 60;
+      const newDateHours = date.getHours() + offset;
+      date.setHours(newDateHours);
+      console.log(date);
+      const newDate = date.toString();
+      const t1Ref = admin.database().ref(`users/${user}/fcmToken`);
+      t1Ref.once("value").then(function(snapshot) {
+        // when in specific call, no .after
         const token1 = snapshot.val();
         const payload = {
           "token": token1,
           "notification": {
             "title": "cloud function demo",
-            "body": "message",
+            "body": newDate,
           },
           "data": {
             "body": "message",
@@ -27,15 +36,14 @@ exports.onTimeEnd = functions.database.ref("users/{user}/device0/time_end")
           return {error: error.code};
         });
       });
-      const t2ref = admin.database().ref(`users/${user}/device0/fcmToken`);
-      t2ref.once("value").then(function(snapshot) {
-        console.log(`token2: ${snapshot.val()}`);
+      const t2Ref = admin.database().ref(`users/${user}/device0/fcmToken`);
+      t2Ref.once("value").then(function(snapshot) {
         const token2 = snapshot.val();
         const payload = {
           "token": token2,
           "notification": {
             "title": "cloud function demo",
-            "body": "message",
+            "body": newDate,
           },
           "data": {
             "body": "message",

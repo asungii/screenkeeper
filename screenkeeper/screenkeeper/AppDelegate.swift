@@ -5,7 +5,7 @@ import UserNotifications
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate, MessagingDelegate, UNUserNotificationCenterDelegate {
-
+        
     var window: UIWindow?
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
@@ -24,7 +24,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MessagingDelegate, UNUser
             print("consented to notifications")
         }
         application.registerForRemoteNotifications()
-
+                
         return true
     }
     
@@ -56,19 +56,26 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MessagingDelegate, UNUser
     }
     
     func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse) async {
-        print("notification received")
         let notifTitle = response.notification.request.content.title
-        let notifBody = response.notification.request.content.body
+        let notifBody = "2"
         print("didreceive title \(notifTitle)")
         print("didreceive title \(notifBody)")
     }
     
     func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
-        print("notification received")
         let notifTitle = notification.request.content.title
-        let notifBody = notification.request.content.body
+        let notifBody = "1"
         print("willpresent title \(notifTitle)")
         print("willpresent body \(notifBody)")
     }
-
+    
+    func timeEndToTimeLeft(_ timeEnd: String) -> String {
+        let newTimeEnd = Double(timeEnd) ?? -1.0
+        let currentTime = Date().timeIntervalSince1970
+        let timeInterval = newTimeEnd - currentTime
+        
+        let formatter = DateComponentsFormatter()
+        
+        return formatter.string(from: timeInterval) ?? "no time"
+    }
 }
