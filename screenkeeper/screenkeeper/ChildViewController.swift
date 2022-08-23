@@ -122,6 +122,7 @@ class ChildViewController: UIViewController {
         
         if timeEndDate < Date() {
             timerDisplay.text = "0"
+            self.database.child("users/\(self.parentUsername)/device0/time_over").setValue(true)
             return
         }
         

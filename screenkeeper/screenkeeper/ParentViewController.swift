@@ -140,6 +140,7 @@ class ParentViewController: UIViewController {
         
         if endTimeDate < Date() {
             timerDisplay.text = "0"
+            self.database.child("users/\(self.username)/device0/time_over").setValue(true)
             return
         }
         
@@ -149,7 +150,9 @@ class ParentViewController: UIViewController {
     }
     
     @objc private func addTimeButtonTapped() {
-                
+        
+        self.database.child("users/\(self.username)/device0/time_over").setValue(false)
+        
         self.database.child("users/\(self.username)/device0/time_end").observeSingleEvent(of: .value, with: { snapshot in
             
             var oldEndTime = snapshot.value as? Double ?? -1.0

@@ -115,12 +115,13 @@ class ChildSetupViewController: UIViewController {
             }
                         
             strongSelf.database.child("users/\(parentUsername)").observeSingleEvent(of: .value, with: { snapshot in
-                let count = snapshot.childrenCount - 4 // THIS IS NUMBER OF NONDEVICE ITEMS IN PARENT USER
+                let count = snapshot.childrenCount - 5 // THIS IS NUMBER OF NONDEVICE ITEMS IN PARENT USER
                 let token = FirebaseMessaging.Messaging.messaging().fcmToken
 
                 strongSelf.database.child("users/\(parentUsername)/device\(count)/username").setValue(childUsername)
                 strongSelf.database.child("users/\(parentUsername)/device\(count)/name").setValue(enteredName)
                 strongSelf.database.child("users/\(parentUsername)/device\(count)/time_end").setValue(0)
+                strongSelf.database.child("users/\(parentUsername)/device\(count)/time_over").setValue(false)
                 strongSelf.database.child("users/\(parentUsername)/device\(count)/fcmToken").setValue(token)
             })
                         
